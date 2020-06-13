@@ -271,9 +271,10 @@ def create_groundtruth_database(data_path,
 
 
 if __name__ == '__main__':
-    create_kitti_info_file('/home/billyhe/data/KITTI')
-    create_reduced_point_cloud('/home/billyhe/data/KITTI')
+    data_root = '/research/dept7/glchen/datasets/kitti/kitti_for_sassd'
+    create_kitti_info_file(data_root)
+    create_reduced_point_cloud(data_root)
 
-    create_groundtruth_database(data_path='/home/billyhe/data/KITTI', \
-                                info_path='/home/billyhe/data/KITTI/kitti_infos_trainval.pkl', \
-                                db_info_save_path='/home/billyhe/data/KITTI/kitti_dbinfos_trainval.pkl')
+    create_groundtruth_database(data_path=data_root, \
+                                info_path=data_root+'/kitti_infos_trainval.pkl', \
+                                db_info_save_path=data_root+'/kitti_dbinfos_trainval.pkl')
