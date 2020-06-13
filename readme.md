@@ -21,11 +21,22 @@ Current single-stage detectors are efficient by progressively downscaling the 3D
 - `mayavi`
 - `spconv` (v1.0)
 
+
+```bash
+pip install terminaltables pycocotools mmcv tqdm numba==0.43.1
+```
+
 # Installation
 1. Clone this repository.
 2. Compile C++/CUDA modules in mmdet/ops by running the following command at each directory, e.g.
 ```bash
 $ cd mmdet/ops/points_op
+$ python3 setup.py build_ext --inplace
+
+$ cd mmdet/ops/pointnet2
+$ python3 setup.py build_ext --inplace
+
+$ cd mmdet/ops/iou3d
 $ python3 setup.py build_ext --inplace
 ```
 3. Setup following Environment variables, you may add them to ~/.bashrc:
@@ -45,6 +56,7 @@ export LD_LIBRARY_PATH=/home/billyhe/anaconda3/lib/python3.7/site-packages/spcon
 
 2. Create cropped point cloud and sample pool for data augmentation, please refer to [SECOND](https://github.com/traveller59/second.pytorch).
 ```bash
+$ export PYTHONPATH=/path/to/SA-SSD
 $ python3 tools/create_data.py
 ```
 
