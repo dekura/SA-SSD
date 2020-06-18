@@ -1,5 +1,7 @@
 import pathlib
 import pickle
+import sys
+sys.path.append('/research/dept7/glchen/cuda/cuhsd/SA-SSD')
 import numpy as np
 import os.path as osp
 from mmdet.core.bbox3d.geometry import remove_outside_points, points_in_rbbox, box_camera_to_lidar
@@ -276,5 +278,9 @@ if __name__ == '__main__':
     create_reduced_point_cloud(data_root)
 
     create_groundtruth_database(data_path=data_root, \
-                                info_path=data_root+'/kitti_infos_trainval.pkl', \
-                                db_info_save_path=data_root+'/kitti_dbinfos_trainval.pkl')
+                                info_path=data_root+'/kitti_infos_train.pkl', \
+                                db_info_save_path=data_root+'/kitti_dbinfos_train.pkl')
+
+    # create_groundtruth_database(data_path=data_root, \
+    #                             info_path=data_root+'/kitti_infos_trainval.pkl', \
+    #                             db_info_save_path=data_root+'/kitti_dbinfos_trainval.pkl')

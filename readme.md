@@ -21,6 +21,13 @@ Current single-stage detectors are efficient by progressively downscaling the 3D
 - `mayavi`
 - `spconv` (v1.0)
 
+## build `spconv`
+
+```bash
+refer to https://github.com/traveller59/spconv/issues/152
+```
+
+
 
 ```bash
 pip install terminaltables pycocotools mmcv tqdm numba==0.43.1
@@ -45,6 +52,7 @@ export NUMBAPRO_CUDA_DRIVER=/usr/lib/x86_64-linux-gnu/libcuda.so
 export NUMBAPRO_NVVM=/usr/local/cuda/nvvm/lib64/libnvvm.so
 export NUMBAPRO_LIBDEVICE=/usr/local/cuda/nvvm/libdevice
 export LD_LIBRARY_PATH=/home/billyhe/anaconda3/lib/python3.7/site-packages/spconv;
+export LD_LIBRARY_PATH=/research/dept7/glchen/miniconda3/envs/sassd/lib/python3.7/site-packages/spconv:$LD_LIBRARY_PATH
 ```
 
 # Data Preparation
@@ -77,7 +85,7 @@ $ python3 tools/create_data.py
 
 # Pretrained Model
 You can download the pretrained model [here](https://drive.google.com/file/d/1WJnJDMOeNKszdZH3P077wKXcoty7XOUb/view?usp=sharing), 
-which is trained on the train split (3712 samples) and evaluated on the val split (3769 samples) and test split (7518 samples). 
+which is trained on the train split (3712 samples) and evaluated on the val split (3769 samples) and test split (7518 samples).
 The performance (using 40 recall poisitions) on validation set is as follows:
 ```
 Car  AP@0.70, 0.70, 0.70:

@@ -1,7 +1,7 @@
 from __future__ import division
 import argparse
 import sys
-sys.path.append('/home/billyhe/SA-SSD')
+sys.path.append('/research/dept7/glchen/cuda/cuhsd/SA-SSD')
 from mmcv.runner import Runner, DistSamplerSeedHook
 from mmcv.parallel import MMDataParallel, MMDistributedDataParallel
 from mmdet.core import (DistOptimizerHook, CocoDistEvalRecallHook,
