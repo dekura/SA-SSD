@@ -11,10 +11,10 @@ python=/usr/local/miniconda3/envs/gdspy/bin/python
 
 # $python gds2kitti.py \
 # --name 'case2' \
-# --in_folder '/Users/dekura/chen/bei/cuhsd/ICCAD16-N7M2EUV/case2/' \
+# --in_dir '/Users/dekura/chen/bei/cuhsd/ICCAD16-N7M2EUV/case2/' \
 
 
 $python gds2kitti.py \
 --name 'case1' \
---in_folder '/Users/dekura/chen/bei/cuhsd/ICCAD16-N7M2EUV/case1/' \
+--in_dir '/Users/dekura/chen/bei/cuhsd/ICCAD16-N7M2EUV/case1/' \
 

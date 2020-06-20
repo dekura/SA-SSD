@@ -1,7 +1,7 @@
 '''
 @Author: Guojin Chen
 @Date: 2020-06-18 17:53:11
-@LastEditTime: 2020-06-19 14:28:50
+@LastEditTime: 2020-06-20 10:34:57
 @Contact: cgjhaha@qq.com
 @Description: transfer the gds to polygon arrays.
 '''
@@ -88,12 +88,12 @@ def _csv2poly(csv_path, offsets, args):
 
 
 # def gds2poly(args):
-#     gds_paths = Path(args.in_folder).glob('*.gds')
+#     gds_paths = Path(args.in_dir).glob('*.gds')
 #     for gds_path in gds_paths:
 #         gds_name = gds_path.stem
 #         # print(type(gds_name))
 #         csv_path = gds_name + '.csv'
-#         csv_path = args.in_folder / csv_path
+#         csv_path = args.in_dir / csv_path
 #         offsets = _get_offset(str(gds_path), args)
 #         # print(offsets)
 #         _gds2poly(str(gds_path), offsets, args)

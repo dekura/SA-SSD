@@ -1,6 +1,6 @@
 LAYERS = {
-    'rect': 1000,
-    'wire': 10000,
+    'wire': 1000,
+    'rect': 10000,
 }
 
 
@@ -8,3 +8,6 @@ LAYERS = {
 PRECISION = 1000
 
 HSD_WH = 80
+
+# velodyne sample step
+STEP = 2
