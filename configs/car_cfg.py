@@ -78,7 +78,8 @@ test_cfg = dict(
 )
 # dataset settings
 dataset_type = 'KittiLiDAR'
-data_root = '/research/dept7/glchen/datasets/kitti/kitti_for_sassd/'
+# data_root = '/research/dept7/glchen/datasets/kitti/kitti_for_sassd/'
+data_root = '/research/dept7/glchen/datasets/kitti/case1_fakekitti/'
 img_norm_cfg = dict(
     mean=[123.675, 116.28, 103.53], std=[58.395, 57.12, 57.375], to_rgb=True)
 data = dict(
@@ -105,6 +106,7 @@ data = dict(
             min_num_points=5,
             sample_max_num=15,
             removed_difficulties=[-1],
+            # removed_difficulties=[],
             global_rot_range=[-0.78539816, 0.78539816],
             gt_rot_range=[-0.78539816, 0.78539816],
             center_noise_std=[1., 1., .5],

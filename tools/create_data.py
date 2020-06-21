@@ -273,7 +273,8 @@ def create_groundtruth_database(data_path,
 
 
 if __name__ == '__main__':
-    data_root = '/research/dept7/glchen/datasets/kitti/kitti_for_sassd'
+    # data_root = '/research/dept7/glchen/datasets/kitti/kitti_for_sassd'
+    data_root = '/research/dept7/glchen/datasets/kitti/case1_fakekitti'
     create_kitti_info_file(data_root)
     create_reduced_point_cloud(data_root)
 
