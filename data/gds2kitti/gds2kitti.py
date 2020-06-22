@@ -1,7 +1,7 @@
 '''
 @Author: Guojin Chen
 @Date: 2020-06-18 17:09:45
-@LastEditTime: 2020-06-20 17:18:00
+@LastEditTime: 2020-06-21 22:35:11
 @Contact: cgjhaha@qq.com
 @Description: translate the gds to kitti format datasets
 '''
@@ -80,7 +80,7 @@ for gds_path in gds_paths:
 # ================================================
 # visualize the velodyne
 # ================================================
-    draw_velodyne(velsets)
+    # draw_velodyne(velsets)
 
 elapsed = time.time() - t
 print('total running time: {}'.format(elapsed))

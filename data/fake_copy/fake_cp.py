@@ -1,7 +1,7 @@
 '''
 @Author: Guojin Chen
 @Date: 2020-06-20 17:30:11
-@LastEditTime: 2020-06-21 14:20:24
+@LastEditTime: 2020-06-21 22:41:32
 @Contact: cgjhaha@qq.com
 @Description: copy one file to many
 '''
@@ -15,7 +15,7 @@ dirs = [
     # 'calib',
     # 'image_2',
     'label_2',
-    # 'velodyne'
+    'velodyne'
 ]
 
 in_root_dir = '/Users/dekura/chen/bei/cuhsd/SA-SSD/data/gds2kitti/results/case1/kitti'
