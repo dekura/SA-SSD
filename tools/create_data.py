@@ -15,7 +15,7 @@ def _read_imageset_file(path):
     return [int(line) for line in lines]
 
 
-def _calculate_num_points_in_gt(data_path, infos, relative_path, remove_outside=True, num_features=4):
+def _calculate_num_points_in_gt(data_path, infos, relative_path, remove_outside=False, num_features=4):
     for info in infos:
         if relative_path:
             v_path = str(pathlib.Path(data_path) / info["velodyne_path"])
@@ -39,6 +39,8 @@ def _calculate_num_points_in_gt(data_path, infos, relative_path, remove_outside=
         rots = annos['rotation_y'][:num_obj]
         gt_boxes_camera = np.concatenate(
             [loc, dims, rots[..., np.newaxis]], axis=1)
+# TODO:
+# change this function
         gt_boxes_lidar = box_camera_to_lidar(
             gt_boxes_camera, rect, Trv2c)
         indices = points_in_rbbox(points_v[:, :3], gt_boxes_lidar)
@@ -173,7 +175,7 @@ def create_groundtruth_database(data_path,
                                 database_save_path=None,
                                 db_info_save_path=None,
                                 relative_path=True,
-                                lidar_only=False,
+                                lidar_only=True,
                                 bev_only=False,
                                 coors_range=None):
     root_path = pathlib.Path(data_path)
@@ -237,6 +239,7 @@ def create_groundtruth_database(data_path,
             filename = f"{image_idx}_{names[i]}_{gt_idxes[i]}.bin"
             filepath = database_save_path / filename
             gt_points = points[point_indices[:, i]]
+            # print('gt_points shape', gt_points.shape)
 
             gt_points[:, :3] -= rbbox_lidar[i, :3]
             with open(filepath, 'w') as f:
@@ -255,7 +258,7 @@ def create_groundtruth_database(data_path,
                     "num_points_in_gt": gt_points.shape[0],
                     "difficulty": difficulty[i],
                 }
-
+                print('nums:',db_info["num_points_in_gt"])
                 local_group_id = group_ids[i]
                 # if local_group_id >= 0:
                 if local_group_id not in group_dict:

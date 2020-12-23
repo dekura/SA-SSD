@@ -1,7 +1,7 @@
 '''
 @Author: Guojin Chen
 @Date: 2020-06-18 17:09:45
-@LastEditTime: 2020-06-21 22:35:11
+@LastEditTime: 2020-06-24 10:58:55
 @Contact: cgjhaha@qq.com
 @Description: translate the gds to kitti format datasets
 '''
@@ -15,7 +15,7 @@ from pathlib import Path
 from utils.consts import LAYERS
 from utils.utils import logtxt, predir
 from utils.polys2vel import polys2vels, save_vels
-from utils.draw_vels import draw_velodyne
+from utils.draw_vels import draw_velodyne, draw_velodyne_3d
 from utils.gds2poly import _gds2poly, _csv2poly, _get_offset
 
 parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -55,20 +55,20 @@ for gds_path in gds_paths:
 # ================================================
 # visualize the hsd in gds
 # ================================================
-    gdspy.current_library = gdspy.GdsLibrary()
-    gdsii = gdspy.GdsLibrary(unit=1e-9)
-    cell = gdsii.new_cell('TOP')
-    for name, polyset in gds_polys.items():
-        layer_num = LAYERS[name]
-        polygons = gdspy.PolygonSet(polyset, layer=layer_num)
-        cell.add(polygons)
-    for id, hsd_set in hsd_polys.items():
-        layer_num = int(id)
-        polygons = gdspy.PolygonSet(hsd_set, layer=layer_num)
-        cell.add(polygons)
-    out_name = gds_path.name
-    out_path = args.res_gds_dir / out_name
-    gdsii.write_gds(str(out_path))
+    # gdspy.current_library = gdspy.GdsLibrary()
+    # gdsii = gdspy.GdsLibrary(unit=1e-9)
+    # cell = gdsii.new_cell('TOP')
+    # for name, polyset in gds_polys.items():
+    #     layer_num = LAYERS[name]
+    #     polygons = gdspy.PolygonSet(polyset, layer=layer_num)
+    #     cell.add(polygons)
+    # for id, hsd_set in hsd_polys.items():
+    #     layer_num = int(id)
+    #     polygons = gdspy.PolygonSet(hsd_set, layer=layer_num)
+    #     cell.add(polygons)
+    # out_name = gds_path.name
+    # out_path = args.res_gds_dir / out_name
+    # gdsii.write_gds(str(out_path))
 # ================================================
 # save the polygons to the velodyne
 # now we only take the wire the make the velodyne
@@ -81,6 +81,7 @@ for gds_path in gds_paths:
 # visualize the velodyne
 # ================================================
     # draw_velodyne(velsets)
+    draw_velodyne_3d(velsets)
 
 elapsed = time.time() - t
 print('total running time: {}'.format(elapsed))

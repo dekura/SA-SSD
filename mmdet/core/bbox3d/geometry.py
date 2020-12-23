@@ -37,7 +37,10 @@ def box_camera_to_lidar(data, r_rect, velo2cam):
     xyz = data[:, 0:3]
     l, h, w = data[:, 3:4], data[:, 4:5], data[:, 5:6]
     r = data[:, 6:7]
-    xyz_lidar = camera_to_lidar(xyz, r_rect, velo2cam)
+    # print('1:',xyz.shape)
+    # xyz_lidar = camera_to_lidar(xyz, r_rect, velo2cam)
+    # print('2:', xyz_lidar.shape)
+    xyz_lidar = xyz
     return np.concatenate([xyz_lidar, w, l, h, r], axis=1)
 
 def camera_to_lidar(points, r_rect, velo2cam):
@@ -63,13 +66,15 @@ def remove_outside_points(points, rect, Trv2c, P2, image_shape):
 def points_in_rbbox(points, rbbox, lidar=True):
     if lidar:
         h_axis = 2
-        origin = [0.5, 0.5, 0]
+        origin = [0, 0, 0]
     else:
         origin = [0.5, 1.0, 0.5]
         h_axis = 1
     rbbox_corners = center_to_corner_box3d(
         rbbox, origin=origin, axis=h_axis)
+    # print(rbbox_corners)
     surfaces = corner_to_surfaces_3d(rbbox_corners)
+    # print(points.shape)
     indices = points_in_convex_polygon_3d_jit(points[:, :3], surfaces)
     return indices
 
@@ -212,11 +217,15 @@ def points_in_convex_polygon_3d_jit(points,
     # d: [num_polygon, max_num_surfaces]
     ret = np.ones((num_points, num_polygons), dtype=np.bool_)
     sign = 0.0
+    # print('num points:',num_points)
+    # print('num polygons:', num_polygons)
     for i in range(num_points):
         for j in range(num_polygons):
             for k in range(max_num_surfaces):
                 if k > num_surfaces[j]:
                     break
+                # if points[i, 0] > 9 and points[i, 1] < -4:
+                    # print('in area :', points[i])
                 sign = points[i, 0] * normal_vec[j, k, 0] \
                        + points[i, 1] * normal_vec[j, k, 1] \
                        + points[i, 2] * normal_vec[j, k, 2] + d[j, k]
@@ -378,7 +387,8 @@ def center_to_corner_box2d(centers, dims, angles=None, origin=0.5):
     return corners
 
 def center_to_corner_box3d(centers,
-                           origin=[0.5, 0.5, 0],
+                        #    origin=[0.5, 0.5, 0],
+                           origin=[0,0,0],
                            axis=2):
     """convert kitti locations, dimensions and angles to corners
 
