@@ -1,7 +1,7 @@
 '''
 @Author: Guojin Chen
 @Date: 2020-06-20 10:15:20
-@LastEditTime: 2020-06-21 22:34:08
+LastEditTime: 2020-12-24 19:54:11
 @Contact: cgjhaha@qq.com
 @Description: transfer the polygons to the velodyne
 '''
@@ -38,27 +38,36 @@ def _ck_vertical(start, end):
 def se2vels(s, e):
     # print('s:',s)
     # print('e:',e)
-    if _ck_vertical(s, e):
-        big = max(s[1], e[1])
-        small = min(s[1], e[1])
-        y = np.arange(small, big, STEP)
-        # print('y:', y)
-        x = np.linspace(s[0], e[0], y.shape[0])
-        # print('x:', x)
-        z = np.zeros(y.shape[0])
-        z[:] = 0.5
-        alpha = np.ones(y.shape[0])
-    else:
-        big = max(s[0], e[0])
-        small = min(s[0], e[0])
-        x = np.arange(small, big, STEP)
-        # print('x:', x)
-        y = np.linspace(s[1], e[1], x.shape[0])
-        z = np.zeros(x.shape[0])
-        z[:] = 0.5
-        alpha = np.ones(x.shape[0])
-    vels = np.row_stack((x, y, z, alpha))
-    vels = vels.T
+    vels = np.array([])
+    for z_i in [0.3, 0.5]:
+        if _ck_vertical(s, e):
+            big = max(s[1], e[1])
+            small = min(s[1], e[1])
+            y = np.arange(small, big, STEP)
+            # print('y:', y)
+            x = np.linspace(s[0], e[0], y.shape[0])
+            # print('x:', x)
+            z = np.zeros(y.shape[0])
+            z[:] = z_i
+            # print('z:', z)
+            alpha = np.ones(y.shape[0])
+        else:
+            big = max(s[0], e[0])
+            small = min(s[0], e[0])
+            x = np.arange(small, big, STEP)
+            # print('x:', x)
+            y = np.linspace(s[1], e[1], x.shape[0])
+            z = np.zeros(x.shape[0])
+            z[:] = z_i
+            alpha = np.ones(x.shape[0])
+        vel = np.row_stack((x, y, z, alpha))
+        vel = vel.T
+        print('vel: \n', vel)
+        if vels.shape[0] > 0:
+            vels = np.concatenate((vels, vel), axis=0)
+        else:
+            vels = vel
+    # print(vels)
     return vels
 
 

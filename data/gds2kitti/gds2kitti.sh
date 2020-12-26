@@ -1,7 +1,7 @@
 ###
  # @Author: Guojin Chen
  # @Date: 2020-06-19 13:31:33
- # @LastEditTime: 2020-06-21 22:30:04
+ # @LastEditTime: 2020-12-24 17:21:39
  # @Contact: cgjhaha@qq.com
  # @Description: 
 ###
@@ -17,5 +17,5 @@ python=/usr/local/miniconda3/envs/gdspy/bin/python
 
 $python gds2kitti.py \
 --name 'case1' \
---in_dir '/Users/dekura/chen/bei/cuhsd/ICCAD16-N7M2EUV/case1/' \
+--in_dir '/Users/dekura/chen/bei/projects/pchsd/ICCAD16-N7M2EUV/case1'
 

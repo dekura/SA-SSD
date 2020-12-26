@@ -1,7 +1,7 @@
 '''
 @Author: Guojin Chen
 @Date: 2020-06-18 17:09:45
-@LastEditTime: 2020-06-24 10:58:55
+LastEditTime: 2020-12-24 19:50:19
 @Contact: cgjhaha@qq.com
 @Description: translate the gds to kitti format datasets
 '''
@@ -75,13 +75,14 @@ for gds_path in gds_paths:
 # now all the polys are rects
 # ================================================
     velsets = polys2vels(gds_polys['wire'])
+    # print(velsets)
     save_vels(velsets, gds_name, args)
     print(velsets.shape)
 # ================================================
 # visualize the velodyne
 # ================================================
     # draw_velodyne(velsets)
-    draw_velodyne_3d(velsets)
+    # draw_velodyne_3d(velsets)
 
 elapsed = time.time() - t
 print('total running time: {}'.format(elapsed))
