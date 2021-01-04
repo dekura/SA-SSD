@@ -29,4 +29,4 @@ saved_model_vehicle/
 data/gds2kitti/log
 data/gds2kitti/resultshsd_kitti/testing
 hsd_kitti/training
-# **hsd_kitti**
+**hsd_kitti**
