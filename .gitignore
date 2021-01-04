@@ -27,4 +27,6 @@ saved_model_vehicle/
 .vscode/
 .DS_Store
 data/gds2kitti/log
-data/gds2kitti/results
+data/gds2kitti/resultshsd_kitti/testing
+hsd_kitti/training
+# **hsd_kitti**

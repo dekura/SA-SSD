@@ -2,7 +2,7 @@
 Author: Guojin Chen @ CUHK-CSE
 Homepage: https://dekura.github.io/
 Date: 2020-12-25 10:05:26
-LastEditTime: 2020-12-26 18:18:52
+LastEditTime: 2020-12-28 10:29:31
 Contact: cgjhaha@qq.com
 Description: duplicate the dataset
 
@@ -46,17 +46,19 @@ import os
 import shutil
 from pathlib import Path
 
-data_path = Path('/Users/dekura/chen/bei/projects/pchsd/SA-SSD/data/gds2kitti/annoed_hsd_kitti')
-trian_path = data_path / 'training'
-train_calib = trian_path / 'calib'
-train_label = trian_path / 'label_2'
-train_velo = trian_path / 'velodyne'
-train_img = trian_path / 'image_2'
+data_path = Path('/Users/dekura/chen/bei/projects/pchsd/SA-SSD/data/gds2kitti/hsd_kitti')
+train_path = data_path / 'training'
+train_calib = train_path / 'calib'
+train_label = train_path / 'label_2'
+train_velo = train_path / 'velodyne'
+train_img = train_path / 'image_2'
 
 o_calib = train_calib / '000000.txt'
 o_img = train_img / '000000.png'
 o_label = train_label / '000000.txt'
 o_velo = train_velo / '000000.bin'
+
+test_path = data_path / 'testing'
 
 data_obj = {
     'calib': train_calib,
@@ -91,7 +93,12 @@ def remove_data(remove_id):
         # shutil.copy(str(data_obj[o_obj]), str(to_obj))
         os.remove(str(to_obj))
 
+def cp_testing():
+    shutil.copytree(str(train_path), str(test_path))
+
 
 if __name__ == '__main__':
-    remove_id = 4
-    remove_data(remove_id)
+    # dup_data()
+    # remove_id = 4
+    # remove_data(remove_id)
+    cp_testing()
