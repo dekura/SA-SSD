@@ -2,7 +2,7 @@
 Author: Guojin Chen @ CUHK-CSE
 Homepage: https://dekura.github.io/
 Date: 2020-12-25 10:05:26
-LastEditTime: 2020-12-28 10:29:31
+LastEditTime: 2021-01-04 19:50:09
 Contact: cgjhaha@qq.com
 Description: duplicate the dataset
 
@@ -94,6 +94,8 @@ def remove_data(remove_id):
         os.remove(str(to_obj))
 
 def cp_testing():
+    if test_path.exists():
+        shutil.rmtree(str(test_path))
     shutil.copytree(str(train_path), str(test_path))
 
 

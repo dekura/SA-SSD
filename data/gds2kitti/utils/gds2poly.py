@@ -1,12 +1,13 @@
 '''
 @Author: Guojin Chen
 @Date: 2020-06-18 17:53:11
-@LastEditTime: 2020-06-20 10:34:57
+LastEditTime: 2021-01-06 11:27:49
 @Contact: cgjhaha@qq.com
 @Description: transfer the gds to polygon arrays.
 '''
 import csv
 import gdspy
+import numpy as np
 from pathlib import Path
 from .consts import LAYERS, HSD_WH
 
@@ -28,7 +29,9 @@ def _get_offset(infile, args):
     width = int((bbox[1,0]-bbox[0,0]))
     height= int((bbox[1,1]-bbox[0,1]))
     w_offset = int(bbox[0,0] + (width)/2)
-    h_offset = int(bbox[0,1] + (height)/2)
+    # h_offset = int(bbox[0,1] + (height)/2)
+    # h_offset = int(bbox[0,1] - height)
+    h_offset = int(bbox[0,1])
     return [w_offset, h_offset]
 
 
@@ -50,13 +53,13 @@ def _gds2poly(infile, offsets, args):
     for name, num in LAYERS.items():
         try:
             polyset = cell.get_polygons(by_spec=True)[(num,dtype)]
+            for poly in range(0, len(polyset)):
+                for points in range(0, len(polyset[poly])):
+                    polyset[poly][points][0]=int(polyset[poly][points][0]-w_offset)
+                    polyset[poly][points][1]=int(polyset[poly][points][1]-h_offset)
+            polys[name] = polyset
         except:
             print('layer {}:{} not found, skipping...'.format(name, num))
-        for poly in range(0, len(polyset)):
-            for points in range(0, len(polyset[poly])):
-                polyset[poly][points][0]=int(polyset[poly][points][0]-w_offset)
-                polyset[poly][points][1]=int(polyset[poly][points][1]-h_offset)
-        polys[name] = polyset
     return polys
 
 
@@ -71,19 +74,49 @@ def _center2poly(x, y, offsets):
     return poly
 
 
+def check_in_flag(hsd_flag, sum_xy):
+    flag = False
+    for i in hsd_flag:
+        if np.abs(sum_xy - i) < 1:
+            flag = True
+            return flag
+    return flag
 
+'''
+visualize the hotspot in gds
+
+and now we also need to save the center
+to get the velodyne
+
+hsd_polys: {
+    'dup_removed': is the removed duplicated polys
+}
+'''
 def _csv2poly(csv_path, offsets, args):
     csv_file = open(csv_path, 'r')
     reader = csv.DictReader(csv_file)
     hsd_polys = {}
+    hsd_sets = set()
+    hsd_flag = []
     for row in reader:
         if int(row['category']) >= 1000:
             raise 'hsd out of range, please check'
         x = float(row['x'])
         y = float(row['y'])
+        # simple checks, remove duplicated hotspots
+        if check_in_flag(hsd_flag, x+y):
+            pass
+        else:
+            hsd_sets.add((x, y))
+            hsd_flag.append(x+y)
         if not row['category'] in hsd_polys:
             hsd_polys[row['category']] = []
         hsd_polys[row['category']].append(_center2poly(x,y, offsets))
+    # print(hsd_sets)
+    hsd_polys['dup_removed'] = []
+    for center in hsd_sets:
+        x, y = center
+        hsd_polys['dup_removed'].append(_center2poly(x, y, offsets))
     return hsd_polys
 
 
