@@ -2,7 +2,7 @@
 Author: Guojin Chen @ CUHK-CSE
 Homepage: https://dekura.github.io/
 Date: 2020-12-25 10:05:26
-LastEditTime: 2021-01-04 19:50:09
+LastEditTime: 2021-01-08 11:08:17
 Contact: cgjhaha@qq.com
 Description: duplicate the dataset
 
@@ -80,6 +80,7 @@ def dup_data():
             suffix = data_obj[o_obj].suffix # '.txt'
             to_obj_name = ('%06d' % (i + 1)) + suffix
             to_obj = data_obj[obj] / to_obj_name
+            # print('copy {} to {}'.format(str(data_obj[o_obj]), str(to_obj)))
             shutil.copy(str(data_obj[o_obj]), str(to_obj))
 
 
@@ -100,7 +101,9 @@ def cp_testing():
 
 
 if __name__ == '__main__':
-    # dup_data()
+    dup_data()
+    print('dup data done')
+    cp_testing()
+    print('copy traning to testing done')
     # remove_id = 4
     # remove_data(remove_id)
-    cp_testing()

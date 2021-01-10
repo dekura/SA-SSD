@@ -1,12 +1,13 @@
 '''
 @Author: Guojin Chen
 @Date: 2020-06-20 10:15:20
-LastEditTime: 2021-01-06 19:23:14
+LastEditTime: 2021-01-08 20:28:42
 @Contact: cgjhaha@qq.com
 @Description: transfer the polygons to the velodyne
 '''
+import math
 import numpy as np
-from .consts import STEP
+from .consts import *
 '''
 @description: transfer the polygons to the velodyne
 @param {type}
@@ -136,15 +137,16 @@ def check_in_poly(vel, poly):
 
 '''
 check whether the vel in any of the hsd polys
+return the poly_number
+if -1, means not in any polys
+else, in some of the polys
 '''
 def check_vel_in_hsd_polys(vel, hsd_polys):
-    in_poly = False
-    for poly in hsd_polys:
-        # print(vel, poly)
-        # print('vel is: ', vel)
-        # print('poly is: ', poly)
-        in_poly = check_in_poly(vel, poly)
-        if in_poly:
+    in_poly = -1
+    for num, poly in enumerate(hsd_polys):
+        in_poly_bool = check_in_poly(vel, poly)
+        if in_poly_bool:
+            in_poly = num
             return in_poly
     return in_poly
 
@@ -157,14 +159,14 @@ output:
 '''
 def plus_vel_height(vel):
     vel_plus = np.array([])
-    for z_i in np.arange(0.2, 1.1, 0.1):
+    for z_i in np.arange(HEIGHT_START, HEIGHT_END, HEIGHT_STEP):
         tmp = [vel[0], vel[1], z_i, np.random.rand()]
         if vel_plus.shape[0] == 0:
             vel_plus = np.array([tmp])
             # print(vel_plus.shape)
         else:
             # vel_plus = np.append(vel_plus, tmp)
-            print(vel_plus.shape)
+            # print(vel_plus.shape)
             vel_plus = np.concatenate((vel_plus, np.array([tmp])))
     return vel_plus
 
@@ -178,11 +180,39 @@ if vel.x, vel.y in hsd_polys:
 return vel_plus
 '''
 def add_vel_height(vel, hsd_polys):
-    if check_vel_in_hsd_polys(vel, hsd_polys):
+    in_poly_num = check_vel_in_hsd_polys(vel, hsd_polys)
+    if in_poly_num > -1:
         vel_plus = plus_vel_height(vel)
-        return vel_plus
+        return vel_plus, in_poly_num
     else:
         return None
+
+def init_hsd_labels(hsd_poly_num):
+    hsd_labels = {}
+    for i in range(hsd_poly_num):
+        hsd_labels['{}'.format(i)] = [[float('inf'), float('inf')], [float('-inf'), float('-inf')]]
+    return hsd_labels
+
+
+def update_hsd_labels(vel, in_poly_num, hsd_labels):
+    x, y, _, _ = vel
+    hsd_label = hsd_labels['{}'.format(in_poly_num)]
+    ## update ll
+    hsd_label[0][0] = min(x, hsd_label[0][0])
+    hsd_label[0][1] = min(y, hsd_label[0][1])
+
+    ## update ur
+    hsd_label[1][0] = max(x, hsd_label[1][0])
+    hsd_label[1][1] = max(y, hsd_label[1][1])
+
+
+def hsd_labels_rm_inf(hsd_labels):
+    for key in list(hsd_labels.keys()):
+        if math.isinf(hsd_labels[key][0][0]):
+            print('hsd_labels[{}] is inf : {}'.format(key, hsd_labels[key]))
+            hsd_labels.pop(key)
+    return hsd_labels
+
 
 '''
 Here we transfer the hotspots polygons to the velsets
@@ -190,29 +220,32 @@ Note that, the gds polys in the hotspots polygons, will get 1.0 height
 
 wire_vels
     x, y, z, t
+
+for each hsd_poly, save the ll and the ur
+
+hsd_labels: {
+    'in_poly_num': [ll:[x,y], ur:[x,y]]
+}
 '''
 def hsd_polys2vels(hsd_polys, wire_vels):
     hsd_velsets = np.array([])
+    hsd_labels = init_hsd_labels(len(hsd_polys))
     for vel in wire_vels:
         vel_plus = add_vel_height(vel, hsd_polys)
         # print(vel_plus)
         if vel_plus is not None:
+            vel_plus, in_poly_num = vel_plus
+            # process labels
+            update_hsd_labels(vel, in_poly_num, hsd_labels)
+            # process velsets
             if hsd_velsets.shape[0] == 0:
                 hsd_velsets = vel_plus
             else:
                 hsd_velsets = np.concatenate((hsd_velsets,vel_plus))
-    return hsd_velsets
-        # if check_vel_in_hsd_polys(vel, hsd_polys):
-    # for polys in hsd_polys:
-    #     vels = _polys2vels(polys)
-    #     if velsets.shape[0] > 0:
-    #         velsets = np.concatenate((velsets, vels))
-    #     else:
-    #         velsets = vels
-        # break
-    # return velsets
-
-
+    print(hsd_labels)
+    hsd_labels = hsd_labels_rm_inf(hsd_labels)
+    print(hsd_labels)
+    return hsd_velsets, hsd_labels
 
 
 
@@ -221,8 +254,60 @@ def save_vels(velsets, gds_name, args):
     txt_name = gds_name + '.txt'
     vel_path = args.kitti_vel_dir / vel_name
     txt_path = args.kitti_txt_dir / txt_name
-    velsets[:, 0] = velsets[:, 0]/100
-    velsets[:, 1] = velsets[:, 1]/100
+    velsets[:, 0] = velsets[:, 0]/SCALE_DOWN
+    velsets[:, 1] = velsets[:, 1]/SCALE_DOWN
     velsets = velsets.astype(np.float32)
     velsets.tofile(vel_path)
     np.savetxt(txt_path, velsets, fmt='%.3f')
+
+def label2str(label, cy_min, cy_max):
+    width = (label[1][0] - label[0][0])/SCALE_DOWN
+    length = (label[1][1] - label[0][1])/SCALE_DOWN
+    if width < 0.05:
+        return None
+    # print('width = ', width)
+    # print('height = ', length)
+    cx = (label[0][0] + label[1][0])/(2*SCALE_DOWN)
+    cy = (label[0][1] + label[1][1])/(2*SCALE_DOWN)
+    # print('cx : ', cx)
+    # print('cy : ', cy)
+    # cx = cx - width/2 - 0.03
+    cx = cx - 0.3
+    # cy is the smaller one
+    cy = cy + 0.05
+    # -cy determins the height
+    # the closer, -0.1, further, 0.6
+    # print('cy_max: ',cy_max)
+    # print('cy_min: ',cy_min)
+    cz = -0.1 + 0.8 * ((cy - cy_min) /(cy_max - cy_min))
+    # print('cz: ', cz)
+
+    label_str = 'Car 0.00 0 0.0 960.00 150.00 1200.00 200.00 0.9 {:.2f} {:.2f} {:.2f} {:.2f} {:.2f} 0.0\n'.format(width, length, -cy, cz, cx)
+
+
+
+    return label_str
+
+'''
+get label y min and max
+'''
+def get_label_ymm(hsd_labels):
+    cys = []
+    for key, label in hsd_labels.items():
+        cy = (label[0][1] + label[1][1])/(2*SCALE_DOWN)
+        cys.append(cy)
+    cys = np.array(cys)
+    return np.min(cys), np.max(cys)
+
+def save_labels(hsd_labels, gds_name, args):
+    label_name = gds_name + '.txt'
+    label_path = args.kitti_label_dir / label_name
+    cy_min, cy_max = get_label_ymm(hsd_labels)
+    saved_count = 0
+    with open(str(label_path), 'w') as f:
+        for key, label in hsd_labels.items():
+            label_str = label2str(label, cy_min, cy_max)
+            if label_str is not None:
+                f.writelines(label_str)
+                saved_count += 1
+    print('save labels num: {}'.format(saved_count))

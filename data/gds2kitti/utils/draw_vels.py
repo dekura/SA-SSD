@@ -1,7 +1,7 @@
 '''
 @Author: Guojin Chen
 @Date: 2020-06-20 14:30:27
-@LastEditTime: 2020-06-24 10:59:24
+LastEditTime: 2021-01-07 14:30:37
 @Contact: cgjhaha@qq.com
 @Description: draw vels
 '''
@@ -37,12 +37,12 @@ def draw_velodyne_3d(velsets):
     for i in [1]:
         x = np.concatenate((x,x))
         y = np.concatenate((y,y))
-        print('x:',x.shape)
-    print('z', z.shape)
+        # print('x:',x.shape)
+    # print('z', z.shape)
     z1 = np.zeros(z.shape)
     z1[:] = 0.4
     z = np.concatenate((z, z1))
-    print('z', z.shape)
+    # print('z', z.shape)
     # z2 = np.zeros(z.shape)
     # z2[:] = 0.3
     # z = np.concatenate((z, z2))

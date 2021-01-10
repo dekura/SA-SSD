@@ -1,7 +1,7 @@
 '''
 @Author: Guojin Chen
 @Date: 2020-06-18 17:09:45
-LastEditTime: 2021-01-06 19:17:16
+LastEditTime: 2021-01-08 19:44:52
 @Contact: cgjhaha@qq.com
 @Description: translate the gds to kitti format datasets
 '''
@@ -12,9 +12,9 @@ import gdspy
 import argparse
 import numpy as np
 from pathlib import Path
-from utils.consts import LAYERS
+from utils.consts import *
 from utils.utils import logtxt, predir
-from utils.polys2vel import polys2vels, save_vels, hsd_polys2vels
+from utils.polys2vel import polys2vels, save_vels, hsd_polys2vels, save_labels
 from utils.draw_vels import draw_velodyne, draw_velodyne_3d
 from utils.gds2poly import _gds2poly, _csv2poly, _get_offset
 
@@ -25,6 +25,9 @@ parser.add_argument('--log_dir', type=str, default='./log', help='dir to save lo
 parser.add_argument('--res_dir', type=str, default='./results', help='dir to save fr results')
 parser.add_argument('--no_sep_hsd', default=False, action='store_true', help='do not seprate the hsd by layer')
 args = parser.parse_args()
+args.step = STEP
+args.scale_down = SCALE_DOWN
+args.hsd_wh = HSD_WH
 print(args)
 predir(args)
 
@@ -52,15 +55,7 @@ for gds_path in gds_paths:
     offsets = _get_offset(str(gds_path), args)
     gds_polys = _gds2poly(str(gds_path), offsets, args)
     hsd_polys = _csv2poly(csv_path, offsets, args)
-
-# ================================================
-# hsd_polys 2 velodyne
-# ================================================
     # print(hsd_polys)
-
-
-# ================================================
-# hsd_polys to label
 # ================================================
 # visualize the hsd in gds
 # ================================================
@@ -87,12 +82,21 @@ for gds_path in gds_paths:
 # now all the polys are rects
 # ================================================
     velsets = polys2vels(gds_polys['wire'])
-    hsd_velsets = hsd_polys2vels(hsd_polys['dup_removed'], velsets)
+# ================================================
+# hsd_polys 2 velodyne
+# ================================================
+    hsd_velsets, hsd_labels = hsd_polys2vels(hsd_polys['dup_removed'], velsets)
+    print('hsd_polys[dup_removed] len: ',len(hsd_polys['dup_removed']))
     print(velsets.shape)
     print(hsd_velsets.shape)
+    # print(hsd_labels)
     velsets = np.concatenate((velsets, hsd_velsets))
     save_vels(velsets, gds_name, args)
-    # print(velsets.shape)
+# ================================================
+# hsd_polys to label
+# ================================================
+    save_labels(hsd_labels, gds_name, args)
+
 # ================================================
 # also save the hotspots polygons to the velodyne
 # because now we want the hotspots polygons higher than the others
@@ -108,4 +112,11 @@ for gds_path in gds_paths:
 elapsed = time.time() - t
 print('total running time: {}'.format(elapsed))
 logtxt('total running time: {}\n\n'.format(elapsed), args)
+
+
+
+# TODO:
+# now we need to split the large gds to many small gds.
+# so we can reduce the total point number
+
 

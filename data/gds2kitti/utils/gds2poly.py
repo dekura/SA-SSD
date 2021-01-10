@@ -1,7 +1,7 @@
 '''
 @Author: Guojin Chen
 @Date: 2020-06-18 17:53:11
-LastEditTime: 2021-01-06 11:27:49
+LastEditTime: 2021-01-08 16:40:36
 @Contact: cgjhaha@qq.com
 @Description: transfer the gds to polygon arrays.
 '''
@@ -77,7 +77,7 @@ def _center2poly(x, y, offsets):
 def check_in_flag(hsd_flag, sum_xy):
     flag = False
     for i in hsd_flag:
-        if np.abs(sum_xy - i) < 1:
+        if np.abs(sum_xy - i) < 10:
             flag = True
             return flag
     return flag
@@ -109,14 +109,18 @@ def _csv2poly(csv_path, offsets, args):
         else:
             hsd_sets.add((x, y))
             hsd_flag.append(x+y)
+            # if x+y == -187565.7:
+                # print(x, y)
         if not row['category'] in hsd_polys:
             hsd_polys[row['category']] = []
         hsd_polys[row['category']].append(_center2poly(x,y, offsets))
-    # print(hsd_sets)
     hsd_polys['dup_removed'] = []
+    # print(hsd_flag[30])
+    # print(hsd_sets)
     for center in hsd_sets:
         x, y = center
         hsd_polys['dup_removed'].append(_center2poly(x, y, offsets))
+    # print(hsd_polys['dup_removed'][30])
     return hsd_polys
 
 
