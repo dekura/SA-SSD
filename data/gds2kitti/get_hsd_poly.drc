@@ -1,0 +1,15 @@
+# this file use klayout drc function to generate the gds
+##########################################################################################
+
+# input
+########################
+source("./results/case2/hsd_gds/testcase2.gds")
+target("./results/case2/hsd_gds/testcase2_in.gds")
+
+wire = polygons(1000, 0)
+hsd = polygons(666, 0)
+
+wire.output(1000, 0)
+hsd.output(666, 0)
+wire.and(hsd).output(777, 0)
+

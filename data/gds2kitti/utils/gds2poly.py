@@ -1,7 +1,7 @@
 '''
 @Author: Guojin Chen
 @Date: 2020-06-18 17:53:11
-LastEditTime: 2021-01-08 16:40:36
+LastEditTime: 2021-01-11 14:35:29
 @Contact: cgjhaha@qq.com
 @Description: transfer the gds to polygon arrays.
 '''
@@ -9,7 +9,7 @@ import csv
 import gdspy
 import numpy as np
 from pathlib import Path
-from .consts import LAYERS, HSD_WH
+from .consts import LAYERS, HSD_WH, WIN_SPACE, WIN_WH
 
 '''
 @description: transfer the gds to polygon arrays.
@@ -32,7 +32,7 @@ def _get_offset(infile, args):
     # h_offset = int(bbox[0,1] + (height)/2)
     # h_offset = int(bbox[0,1] - height)
     h_offset = int(bbox[0,1])
-    return [w_offset, h_offset]
+    return [w_offset, h_offset], bbox
 
 
 
@@ -61,6 +61,46 @@ def _gds2poly(infile, offsets, args):
         except:
             print('layer {}:{} not found, skipping...'.format(name, num))
     return polys
+'''
+@input
+the lower left of a window
+@output
+the window polygon
+'''
+def winll2poly(ll):
+    llx, lly = ll
+    p0 = [llx, lly]
+    p1 = [llx, lly + WIN_WH]
+    p2 = [llx + WIN_WH, lly + WIN_WH]
+    p3 = [llx + WIN_WH, lly]
+    return [p0, p1, p2, p3]
+
+def _win2poly(bbox, offsets, args):
+    # print(bbox)
+    # print(offsets)
+    new_bbox = [
+        [bbox[0][0] - offsets[0], bbox[0][1] - offsets[1]],
+        [bbox[1][0] - offsets[0], bbox[1][1] - offsets[1]]
+    ]
+    # print(new_bbox)
+    # new_bbox = np.array(new_bbox)
+    x_start, x_end = new_bbox[0][0], new_bbox[1][0]
+    y_start, y_end = new_bbox[0][1], new_bbox[1][1]
+    x = np.arange(x_start, x_end - (WIN_WH - WIN_SPACE), step=WIN_SPACE)
+    # print(x)
+    y = np.arange(y_start, y_end - (WIN_WH - WIN_SPACE), step=WIN_SPACE)
+    # print(y)
+    win_lls = []
+    for x_i in x:
+        for y_i in y:
+            win_lls.append((x_i, y_i))
+    # print(win_lls)
+    win_polys = []
+    for win_ll in win_lls:
+        poly = winll2poly(win_ll)
+        win_polys.append(poly)
+    return win_polys
+
 
 
 def _center2poly(x, y, offsets):

@@ -1,7 +1,7 @@
 '''
 @Author: Guojin Chen
 @Date: 2020-06-18 17:31:38
-LastEditTime: 2021-01-07 14:27:09
+LastEditTime: 2021-01-11 15:18:50
 @Contact: cgjhaha@qq.com
 @Description: utils
 '''
@@ -21,6 +21,8 @@ def predir(args):
     makedir(args.res_dir)
     args.res_gds_dir = Path(args.res_dir) / 'hsd_gds'
     makedir(args.res_gds_dir)
+    args.win_gds_dir = Path(args.res_dir) / 'win_gds'
+    makedir(args.win_gds_dir)
     args.res_kitti_dir = Path(args.res_dir) / 'kitti'
     makedir(args.res_kitti_dir)
     args.kitti_vel_dir = args.res_kitti_dir / 'velodyne'
