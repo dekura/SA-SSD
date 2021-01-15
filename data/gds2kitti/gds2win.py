@@ -1,9 +1,9 @@
 '''
 @Author: Guojin Chen
 @Date: 2020-06-18 17:09:45
-LastEditTime: 2021-01-11 20:21:00
+LastEditTime: 2021-01-11 19:55:33
 @Contact: cgjhaha@qq.com
-@Description: translate the gds to kitti format datasets
+@Description: translate the gds to the split windows
 '''
 
 import os
@@ -56,7 +56,6 @@ for gds_path in gds_paths:
     gds_polys = _gds2poly(str(gds_path), offsets, args)
     hsd_polys = _csv2poly(csv_path, offsets, args)
     win_polys = _win2poly(bbox, offsets, args)
-    # print(hsd_polys)
 # ================================================
 # visualize the hsd in gds
 # ================================================
@@ -84,10 +83,9 @@ for gds_path in gds_paths:
         win_polygons = gdspy.PolygonSet(win_polys, layer=LAYERS['win_polys'])
         cell.add(win_polygons)
 
-    # TODO: boolean operation for the wire and the hsd => hsd_wire
+    # boolean operation for the wire and the hsd => wire_in_hsd
     dtype = 0
     wire_polygons = cell.get_polygons(by_spec=True)[(LAYERS['wire'], 0)]
-    # print(type(wire_polygons))
     hsd_polygons = cell.get_polygons(by_spec=True)[(LAYERS['dup_removed'], 0)]
     wire_in_hsd = gdspy.boolean(wire_polygons, hsd_polygons, 'and', layer=LAYERS['wire_in_hsd'])
     cell.add(wire_in_hsd)
@@ -97,7 +95,7 @@ for gds_path in gds_paths:
     out_path = args.res_gds_dir / out_name
     gdsii.write_gds(str(out_path))
 
-    # TODO: boolean operation for the window and the (hsd_wire & wire & hsd)
+    # boolean operation for the window and the (hsd_wire & wire & hsd)
     # produce gds
     for i, win_poly in enumerate(win_polys):
         gdspy.current_library = gdspy.GdsLibrary()
@@ -114,16 +112,27 @@ for gds_path in gds_paths:
         out_path = args.win_gds_dir / out_name
         gdsii.write_gds(str(out_path))
 
-'''
-TODO:
-1. clean the gds
-    1. make the origin (0, 0)
-2. get the label: if the hsd is zero, pass.
-3. get the velodyne
+# ================================================
+# clean the gds : move the origin to 0,0
+# ================================================
+gds_paths = Path(args.win_gds_dir).glob('*.gds')
+for gds_path in gds_paths:
+    gds_name = gds_path.stem
+    offsets, bbox = _get_offset(str(gds_path), args)
+    gds_polys = _gds2poly(str(gds_path), offsets, args)
 
-4. train the model
-5. produce the case3 and case4
-'''
+    gdspy.current_library = gdspy.GdsLibrary()
+    gdsii = gdspy.GdsLibrary(unit=1e-9)
+    cell = gdsii.new_cell('TOP')
+    # add original gds to the data
+    for name, polyset in gds_polys.items():
+        layer_num = LAYERS[name]
+        wire_polygons = gdspy.PolygonSet(polyset, layer=layer_num)
+        cell.add(wire_polygons)
+
+    out_name = gds_path.name
+    out_path = args.win_clean_gds_dir / out_name
+    gdsii.write_gds(str(out_path))
 
 # directly use gdspy to do the boolen opearation.
 # ================================================
@@ -158,12 +167,9 @@ TODO:
 # ================================================
     # draw_velodyne(velsets)
     # draw_velodyne_3d(velsets)
-
 elapsed = time.time() - t
 print('total running time: {}'.format(elapsed))
 logtxt('total running time: {}\n\n'.format(elapsed), args)
-
-
 
 # TODO:
 # now we need to split the large gds to many small gds.

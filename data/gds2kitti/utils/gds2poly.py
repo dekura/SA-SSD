@@ -1,7 +1,7 @@
 '''
 @Author: Guojin Chen
 @Date: 2020-06-18 17:53:11
-LastEditTime: 2021-01-11 14:35:29
+LastEditTime: 2021-01-11 17:12:43
 @Contact: cgjhaha@qq.com
 @Description: transfer the gds to polygon arrays.
 '''

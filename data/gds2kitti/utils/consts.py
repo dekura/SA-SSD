@@ -3,6 +3,7 @@ LAYERS = {
     'rect': 10000,
     'dup_removed': 666,
     'wire_in_hsd': 777,
+    'wire_in_hsd_bbox': 888,
     'win_polys': 999,
 }
 
@@ -13,6 +14,7 @@ PRECISION = 1000
 # HSD_WH = 200
 HSD_WH = 70
 
+# the scale between the gds and the velodyne
 SCALE_DOWN = 100
 
 # velodyne sample step

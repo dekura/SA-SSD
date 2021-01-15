@@ -2,7 +2,7 @@
 Author: Guojin Chen @ CUHK-CSE
 Homepage: https://dekura.github.io/
 Date: 2020-12-25 10:05:26
-LastEditTime: 2021-01-08 11:08:17
+LastEditTime: 2021-01-12 10:20:25
 Contact: cgjhaha@qq.com
 Description: duplicate the dataset
 
@@ -73,7 +73,7 @@ data_obj = {
 
 
 def dup_data():
-    MAX_DUP = 3
+    MAX_DUP = 40
     for i in range(MAX_DUP):
         for obj in ['calib', 'img', 'label', 'velo']:
             o_obj = 'o_' + obj
